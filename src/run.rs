@@ -50,6 +50,13 @@ pub fn run (
     output: Option<PathBuf>,
 ) -> RunStatusCodes {
     let input_buf: Box<dyn BufRead> = if let Some(input) = input {
+        if !input.exists() {
+            println!(
+                "{}: Input file does not exist",
+                "Runtime".cyan().bold(),
+            );
+            return RunStatusCodes::Error;
+        }
         let input_file = std::fs::File::open(input).expect("Unable to open input file");
         Box::new(BufReader::new(input_file))
     } else {
