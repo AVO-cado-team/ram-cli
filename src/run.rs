@@ -27,8 +27,12 @@ impl std::io::Read for RamCliStdin {
 
 impl std::io::Write for RamCliStdout {
     fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
-        print!("{}", "<<< ".cyan().bold());
-        stdout().write(buf)
+        if buf == b"\n" || buf == b"\r" {
+            println!();
+            return Ok(buf.len());
+        }
+        print!("{} {}", "<<<".cyan().bold(), String::from_utf8_lossy(buf));
+        Ok(buf.len())
     }
 
     fn flush(&mut self) -> std::io::Result<()> {
@@ -67,7 +71,7 @@ pub fn run (
         let output_file = std::fs::File::create(output).expect("Unable to open output file");
         Box::new(BufWriter::new(output_file))
     } else {
-        Box::new(BufWriter::new(ramcli_stdout()))
+        Box::new(ramcli_stdout())
     };
 
     let source = std::fs::read_to_string(file).expect("Unable to read file");
