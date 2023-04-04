@@ -7,5 +7,6 @@ edition = "2021"
 
 [dependencies]
 clap = { version = "4.2.1", features = ["derive"] }
+clap_complete = "4"
 colored = "2.0.0"
 ramemu = { git = "https://github.com/AVO-cado-team/ramemu.git", tag = "0.1.3"}

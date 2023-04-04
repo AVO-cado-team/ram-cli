@@ -1,4 +1,5 @@
-use clap::Parser;
+use clap::{CommandFactory, Parser};
+use clap_complete::Shell;
 use colored::Colorize;
 use ram_cli::cli::{Cli, Subcommands};
 use ram_cli::create_program::create_program;
@@ -40,6 +41,22 @@ fn main() {
                 return println!("{}: Program finished with no errors {}", "Runtime".cyan().bold(), "✓".green().bold())
             };
             println!("{}", e);
+        }
+
+        Subcommands::GenCompletion { shell } => {
+            clap_complete::generate_to(shell, &mut Cli::command(), "ram-cli", "./").unwrap();
+            let path = match shell {
+                Shell::Bash => "./procs.bash",
+                Shell::Elvish => "./procs.elv",
+                Shell::Fish => "./procs.fish",
+                Shell::PowerShell => "./_procs.ps1",
+                Shell::Zsh => "./_procs",
+                _ => {
+                    print!("{}", r#"unknown shell type: {}"#);
+                    return ();
+                }
+            };
+            println!("completion file is generated: {path}");
         }
     }
 }
