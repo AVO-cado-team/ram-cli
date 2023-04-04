@@ -1,7 +1,7 @@
 # RAM Emulator CLI
 
 ![Version 0.1.0](https://img.shields.io/badge/version-0.1.0-blue.svg)
-[![License](https://img.shields.io/badge/license-GNU3-blue.svg)]
+![License](https://img.shields.io/badge/license-GNU3-blue.svg)
 
 This CLI is a companion tool for the RAM Emulator library, allowing you to
 easily check, compile, and run RAM assembly code from the command line.
