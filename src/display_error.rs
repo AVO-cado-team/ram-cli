@@ -25,7 +25,7 @@ fn display_error_message(
         "".normal()
     };
 
-    println!("{}: {}", "Error".red().bold(), message);
+    println!("{}: {}", "Error".red().bold(), message.trim());
     println!(
         "{}\t{} {}{}\n",
         line_index.to_string().bright_blue().bold(),
@@ -102,9 +102,9 @@ pub fn display_runtime_error(source: &str, error: &InterpretError) -> Result<(),
             *line_index,
             "Division by zero. Are you trying to divide by zero?".to_string(),
         ),
-        InterpretError::WriteError(line_index) => (
+        InterpretError::IOError(line_index) => (
             *line_index,
-            "Output stream error. Can I write in the specified output?".to_string(),
+            "Invalid input/output. Check if you have provided valid input/output files".to_string(),
         ),
         InterpretError::Halted(line_index) => (
             *line_index,

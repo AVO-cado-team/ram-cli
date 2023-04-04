@@ -1,4 +1,5 @@
 use crate::display_error::display_runtime_error;
+use crate::errors::DescribtibleError;
 use crate::errors::RamCliError;
 use crate::io_manager::create_input_buf;
 use crate::io_manager::create_output_buf;
@@ -20,7 +21,7 @@ pub fn run_source(
         Ok(_) => {}
         Err(e) => {
             display_runtime_error(source, &e)?;
-            return Err(RamCliError::Runtime(format!("{}", e)));
+            return Err(RamCliError::Runtime(e.get_error_reason()));
         }
     }
 

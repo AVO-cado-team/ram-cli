@@ -1,6 +1,6 @@
 # RAM Emulator CLI
 
-![Version 0.1.0](https://img.shields.io/badge/version-0.1.0-blue.svg)
+![Version 0.1.1](https://img.shields.io/badge/version-0.1.1-blue.svg)
 [![License](https://img.shields.io/badge/license-GNU3-blue.svg)](./LICENSE)
 [![ic-it](https://img.shields.io/badge/GitHub-ic--it-blue.svg)](https://github.com/ic-it)
 [![Mykhailo Sichkaruk](https://img.shields.io/badge/GitHub-Mykhailo--Sichkaruk-blue.svg)](https://github.com/Mykhailo-Sichkaruk)
@@ -23,7 +23,7 @@ cd ram-cli
 cargo install --path .
 ```
 ### For your Operating System
-Install binary for your operating system from [releases](https://github.com/AVO-cado-team/ram-cli/releases/tag/v0.1.0).
+Install binary for your operating system from [releases](https://github.com/AVO-cado-team/ram-cli/releases/tag/v0.1.1).
 
 ## Usage
 

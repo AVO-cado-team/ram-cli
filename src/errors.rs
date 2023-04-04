@@ -1,5 +1,10 @@
 use colored::Colorize;
+use ramemu::errors::InterpretError;
 use std::error::Error;
+
+pub trait DescribtibleError {
+    fn get_error_reason(&self) -> String;
+}
 
 #[derive(Debug, PartialEq, Eq, Clone, Hash, PartialOrd, Ord)]
 pub enum RamCliError {
@@ -22,3 +27,28 @@ impl std::fmt::Display for RamCliError {
 }
 
 impl Error for RamCliError {}
+
+impl DescribtibleError for RamCliError {
+    fn get_error_reason(&self) -> String {
+        match self {
+            RamCliError::Io(_) => "IO error".to_string(),
+            RamCliError::Parse(_) => "Parse error".to_string(),
+            RamCliError::Runtime(_) => "Runtime error".to_string(),
+            RamCliError::Other(_) => "Unknown error".to_string(),
+        }
+    }
+}
+
+impl DescribtibleError for InterpretError {
+    fn get_error_reason(&self) -> String {
+        match self {
+            InterpretError::SegmentationFault(_) => "Segmentation fault".to_string(),
+            InterpretError::UnknownLabel(_) => "Unknown label".to_string(),
+            InterpretError::InvalidInput(_, _) => "Invalid input".to_string(),
+            InterpretError::InvalidLiteral(_) => "Invalid literal".to_string(),
+            InterpretError::DivisionByZero(_) => "Division by zero".to_string(),
+            InterpretError::IOError(_) => "IO error".to_string(),
+            InterpretError::Halted(_) => "Halted".to_string(),
+        }
+    }
+}
