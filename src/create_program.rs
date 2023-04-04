@@ -1,6 +1,6 @@
+use crate::colorize::Colorizable;
 use crate::display_error::display_parsing_error;
 use crate::errors::RamCliError;
-use colored::Colorize;
 use ramemu::parser;
 use ramemu::program::Program;
 use ramemu::stmt::Stmt;
@@ -26,12 +26,12 @@ pub fn create_program(source: &str, file_path: PathBuf) -> Result<Program, RamCl
 
     Err(RamCliError::Parse(format!(
         "Found {} {} in file: {}",
-        errors.len().to_string().bright_yellow().bold(),
+        errors.len().to_string().fgbright_yellow().stbold(),
         if errors.len() == 1 { "error" } else { "errors" },
         file_path
             .to_str()
             .expect("This should never happen")
-            .bright_yellow()
-            .bold()
+            .fgbright_yellow()
+            .stbold()
     )))
 }

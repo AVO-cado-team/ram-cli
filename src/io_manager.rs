@@ -1,4 +1,4 @@
-use colored::Colorize;
+use crate::colorize::Colorizable;
 use std::fs::{canonicalize, read_to_string, File};
 use std::io::{stdin, stdout, BufRead, BufReader, BufWriter, Read, Result as IoResult, Write};
 use std::path::PathBuf;
@@ -10,7 +10,7 @@ struct RamCliStdout;
 
 impl Read for RamCliStdin {
     fn read(&mut self, buf: &mut [u8]) -> IoResult<usize> {
-        print!("{}", ">>> ".cyan().bold());
+        print!("{}", ">>> ".fgcyan().stbold());
         stdout().flush().unwrap();
         stdin().read(buf)
     }
@@ -22,7 +22,11 @@ impl Write for RamCliStdout {
             println!();
             return Ok(buf.len());
         }
-        print!("{} {}", "<<<".cyan().bold(), String::from_utf8_lossy(buf));
+        print!(
+            "{} {}",
+            "<<<".fgcyan().stbold(),
+            String::from_utf8_lossy(buf)
+        );
         Ok(buf.len())
     }
 

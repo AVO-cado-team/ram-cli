@@ -1,7 +1,7 @@
 use clap::{CommandFactory, Parser};
 use clap_complete::Shell;
-use colored::Colorize;
 use ram_cli::cli::{Cli, Subcommands};
+use ram_cli::colorize::Colorizable;
 use ram_cli::create_program::create_program;
 use ram_cli::io_manager::read_source;
 use ram_cli::run::run_source;
@@ -17,7 +17,7 @@ fn main() {
             };
 
             let Err(e) = create_program(&source, file) else {
-                return println!("{}: No errors found {}", "Syntax analysis".cyan().bold(), "✓".green().bold())
+                return println!("{}: No errors found {}", "Syntax analysis".fgcyan().stbold(), "✓".fggreen().stbold())
             };
             println!("{}", e);
         }
@@ -38,7 +38,7 @@ fn main() {
             };
 
             let Err(e) = run_source(&source, program, input, output) else {
-                return println!("{}: Program finished with no errors {}", "Runtime".cyan().bold(), "✓".green().bold())
+                return println!("{}: Program finished with no errors {}", "Runtime".fgcyan().stbold(), "✓".fggreen().stbold())
             };
             println!("{}", e);
         }

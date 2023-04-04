@@ -1,4 +1,4 @@
-use colored::Colorize;
+use crate::colorize::Colorizable;
 use ramemu::errors::InterpretError;
 use std::error::Error;
 
@@ -22,7 +22,7 @@ impl std::fmt::Display for RamCliError {
             RamCliError::Runtime(message) => ("Runtime error", message),
             RamCliError::Other(message) => ("Unknown error", message),
         };
-        write!(f, "{}: {}", kind.red().bold(), message)
+        write!(f, "{}: {}", kind.fgred().stbold(), message)
     }
 }
 
