@@ -52,8 +52,8 @@ fn main() {
                 Shell::PowerShell => "./_procs.ps1",
                 Shell::Zsh => "./_procs",
                 _ => {
-                    print!("{}", r#"unknown shell type: {}"#);
-                    return ();
+                    print!("unknown shell type");
+                    return;
                 }
             };
             println!("completion file is generated: {path}");
