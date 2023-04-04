@@ -1,12 +1,12 @@
-use std::error::Error;
 use colored::Colorize;
+use std::error::Error;
 
 #[derive(Debug, PartialEq, Eq, Clone, Hash, PartialOrd, Ord)]
 pub enum RamCliError {
     Io(String),
     Parse(String),
     Runtime(String),
-    Other(String)
+    Other(String),
 }
 
 impl std::fmt::Display for RamCliError {

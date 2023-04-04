@@ -1,7 +1,6 @@
 use clap::{Parser, Subcommand, ValueHint};
 use std::path::PathBuf;
 
-
 #[derive(Parser, Debug)]
 #[command(author, about = "CLI for ramemu (Random Access Machine Emulator)", version, long_about = None)]
 pub struct Cli {
@@ -13,7 +12,7 @@ pub struct Cli {
 pub enum Subcommands {
     Check {
         #[clap(value_hint(ValueHint::DirPath))]
-        file: PathBuf
+        file: PathBuf,
     },
     Run {
         #[clap(value_hint(ValueHint::DirPath))]

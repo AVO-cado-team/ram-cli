@@ -1,22 +1,7 @@
 use colored::Colorize;
-use std::path::{
-    PathBuf
-};
-use std::fs::{
-    read_to_string,
-    canonicalize,
-    File
-};
-use std::io::{
-    stdin, 
-    stdout,
-    Read,
-    Write,
-    BufReader, 
-    BufWriter,
-    BufRead,
-    Result as IoResult
-};
+use std::fs::{canonicalize, read_to_string, File};
+use std::io::{stdin, stdout, BufRead, BufReader, BufWriter, Read, Result as IoResult, Write};
+use std::path::PathBuf;
 
 use crate::errors::RamCliError;
 
@@ -58,16 +43,19 @@ pub fn read_source(file: PathBuf) -> Result<String, RamCliError> {
     let file_path_str = if let Some(fps) = file.to_str() {
         fps
     } else {
-        return Err(RamCliError::Io("You specified a file with an invalid path".to_string()));
+        return Err(RamCliError::Io(
+            "You specified a file with an invalid path".to_string(),
+        ));
     };
 
     let abs_path = canonicalize(&file)
         .map_err(|_| RamCliError::Io(format!("File not found: {}", file_path_str)))?;
-    
+
     if !abs_path.is_file() {
-        return Err(
-            RamCliError::Io(format!("You must specify a file, not a directory: {}", file_path_str))
-        );
+        return Err(RamCliError::Io(format!(
+            "You must specify a file, not a directory: {}",
+            file_path_str
+        )));
     }
 
     let source = read_to_string(abs_path)
