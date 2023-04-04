@@ -4,7 +4,6 @@ use std::path::PathBuf;
 use colored::Colorize;
 
 use crate::errors::RamCliError;
-use crate::errors::RamCliErrorKind;
 use crate::display_error::display_parsing_error;
 
 pub fn create_source(
@@ -27,14 +26,12 @@ pub fn create_source(
         )
     }
     
-    Err(RamCliError::new(
-        RamCliErrorKind::Parse(
-            format!(
-                "Found {} {} in file: {:?}",
-                errors.to_string().bright_yellow().bold(),
-                if errors == 1 { "error" } else { "errors" },
-                file_path
-            )
+    Err(RamCliError::Parse(
+        format!(
+            "Found {} {} in file: {:?}",
+            errors.to_string().bright_yellow().bold(),
+            if errors == 1 { "error" } else { "errors" },
+            file_path
         )
     ))
 }

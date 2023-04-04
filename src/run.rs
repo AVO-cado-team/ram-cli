@@ -1,8 +1,6 @@
 use std::path::PathBuf;
 use ramemu::{program::Program, ram::Ram};
-
 use crate::errors::RamCliError;
-use crate::errors::RamCliErrorKind;
 use crate::io_manager::create_input_buf;
 use crate::io_manager::create_output_buf;
 use crate::display_error::display_runtime_error;
@@ -27,9 +25,9 @@ pub fn run_source (
         Ok(_) => {},
         Err(e) => {
             display_runtime_error(source, &e);
-            return Err(RamCliError::new(
-                RamCliErrorKind::Runtime(format!("{:?}", e))
-            ));
+            return Err(
+                RamCliError::Runtime(format!("{:?}", e))
+            );
         }
     }
 
