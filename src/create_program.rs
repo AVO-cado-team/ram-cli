@@ -1,15 +1,16 @@
 use ramemu::parser;
-use ramemu::stmt::Stmt;
+use ramemu::program::Program;
 use std::path::PathBuf;
 use colored::Colorize;
 
 use crate::errors::RamCliError;
 use crate::display_error::display_parsing_error;
 
-pub fn create_source(
+
+pub fn create_program(
     source: &str,
     file_path: PathBuf,
-) -> Result<Vec<Stmt>, RamCliError> {
+) -> Result<Program, RamCliError> {
     let program: Vec<_> = parser::parse(source).collect();
 
     let errors = program
@@ -19,19 +20,26 @@ pub fn create_source(
     
     if errors == 0 {
         return Ok(
-            program
-                .into_iter()
-                .map(|stmt| stmt.expect("Should be no errors (checked above)"))
-                .collect()
+            Program::from(
+                program
+                    .into_iter()
+                    .map(|stmt| stmt.expect("Should be no errors (checked above)"))
+                    .collect()
+            )
         )
     }
     
     Err(RamCliError::Parse(
         format!(
-            "Found {} {} in file: {:?}",
+            "Found {} {} in file: {}",
             errors.to_string().bright_yellow().bold(),
             if errors == 1 { "error" } else { "errors" },
             file_path
+                .to_str()
+                .expect("That shouldn't happen. Please report this bug.")
+                .bright_yellow()
+                .bold()
+
         )
     ))
 }

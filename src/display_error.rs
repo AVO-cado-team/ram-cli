@@ -5,7 +5,7 @@ use ramemu::errors::InterpretError;
 use colored::Colorize;
 
 
-fn get_line_from_source<'a>(source: &'a str, line_index: usize) -> Result<&'a str, RamCliError> {
+fn get_line_from_source(source: &str, line_index: usize) -> Result<&str, RamCliError> {
     source
         .lines()
         .nth(line_index - 1)
