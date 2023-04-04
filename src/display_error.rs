@@ -1,17 +1,23 @@
+use crate::errors::RamCliError;
 use ramemu::errors::ParseError;
 use ramemu::errors::InvalidArgument;
 use ramemu::errors::InterpretError;
 use colored::Colorize;
 
 
-fn get_line_from_source<'a>(source: &'a str, line_index: usize) -> &'a str {
-    source.lines().nth(line_index - 1).expect(
-        "Could not find line in source",
-    )
+fn get_line_from_source<'a>(source: &'a str, line_index: usize) -> Result<&'a str, RamCliError> {
+    source
+        .lines()
+        .nth(line_index - 1)
+        .ok_or_else(|| 
+            RamCliError::Other(
+                format!("Could not find line {} in source", line_index),
+            )
+        )
 }
 
-fn display_error_message(source: &str, line_index: usize, message: &str) {
-    let line = get_line_from_source(source, line_index);
+fn display_error_message(source: &str, line_index: usize, message: &str) -> Result<(), RamCliError> {
+    let line = get_line_from_source(source, line_index)?;
     let (command, comment) = line.split_once('#').unwrap_or((line, ""));
 
     let comment = if !comment.is_empty() {
@@ -28,9 +34,10 @@ fn display_error_message(source: &str, line_index: usize, message: &str) {
         command,
         comment
     );
+    Ok(())
 }
 
-pub fn display_parsing_error(source: &str, error: &ParseError) {
+pub fn display_parsing_error(source: &str, error: &ParseError) -> Result<(), RamCliError> {
     let (line_index, message) = match error {
         ParseError::LabelIsNotValid(line_index) => (
             *line_index,
@@ -79,11 +86,12 @@ pub fn display_parsing_error(source: &str, error: &ParseError) {
         ParseError::UnknownError(line_index) => (*line_index, "Unknown error".to_string()),
     };
 
-    display_error_message(source, line_index, &message);
+    display_error_message(source, line_index, &message)?;
+    Ok(())
 }
 
 
-pub fn display_runtime_error(source: &str, error: &InterpretError) {
+pub fn display_runtime_error(source: &str, error: &InterpretError) -> Result<(), RamCliError> {
     let (line_index, message) = match error {
         InterpretError::SegmentationFault(line_index) => (
             *line_index,
@@ -120,5 +128,6 @@ pub fn display_runtime_error(source: &str, error: &InterpretError) {
                 .to_string(),
         ),
     };
-    display_error_message(source, line_index, &message);
+    display_error_message(source, line_index, &message)?;
+    Ok(())
 }
