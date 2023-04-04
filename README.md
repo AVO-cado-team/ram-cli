@@ -1,7 +1,10 @@
 # RAM Emulator CLI
 
 ![Version 0.1.0](https://img.shields.io/badge/version-0.1.0-blue.svg)
-![License](https://img.shields.io/badge/license-GNU3-blue.svg)
+[![License](https://img.shields.io/badge/license-GNU3-blue.svg)](./LICENSE)
+[![ic-it](https://img.shields.io/badge/GitHub-ic--it-blue.svg)](https://github.com/ic-it)
+[![Mykhailo Sichkaruk](https://img.shields.io/badge/GitHub-Mykhailo--Sichkaruk-blue.svg)](https://github.com/Mykhailo-Sichkaruk)
+
 
 This CLI is a companion tool for the RAM Emulator library, allowing you to
 easily check, compile, and run RAM assembly code from the command line.
@@ -13,14 +16,14 @@ easily check, compile, and run RAM assembly code from the command line.
 - Customizable input and output options
 
 ## Installation
-
-You can install the RAM Emulator CLI using Cargo:
-
+### From Source
 ```bash
 git clone https://github.com/Ddystopia/ram-cli.git
 cd ram-cli
 cargo install --path .
 ```
+### For your Operating System
+Install binary for your operating system from [releases](https://github.com/AVO-cado-team/ram-cli/releases/tag/v0.1.0).
 
 ## Usage
 
@@ -43,7 +46,7 @@ ram-cli run [OPTIONS] <FILE>
 ```
 
 Compiles and runs the RAM assembly code in the specified file. You can also
-specify input and output options with -i/--input and -o/--output flags.
+specify input and output options with `-i`/`--input` and `-o`/`--output` flags.
 
 ### Examples
 
