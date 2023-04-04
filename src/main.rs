@@ -46,14 +46,13 @@ fn main() {
         Subcommands::GenCompletion { shell } => {
             clap_complete::generate_to(shell, &mut Cli::command(), "ram-cli", "./").unwrap();
             let path = match shell {
-                Shell::Bash => "./procs.bash",
-                Shell::Elvish => "./procs.elv",
-                Shell::Fish => "./procs.fish",
-                Shell::PowerShell => "./_procs.ps1",
-                Shell::Zsh => "./_procs",
+                Shell::Bash => "./ram-cli.bash",
+                Shell::Elvish => "./ram-cli.elv",
+                Shell::Fish => "./ram-cli.fish",
+                Shell::PowerShell => "./_ram-cli.ps1",
+                Shell::Zsh => "./_ram-cli",
                 _ => {
-                    println!("Unknown shell type");
-                    return;
+                    return println!("Unknown shell type");
                 }
             };
             println!("Completion file is generated: {path}");
