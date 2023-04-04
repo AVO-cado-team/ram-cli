@@ -1,4 +1,5 @@
 use clap::{Parser, Subcommand, ValueHint};
+use clap_complete::Shell;
 use std::path::PathBuf;
 
 #[derive(Parser, Debug)]

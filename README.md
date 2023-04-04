@@ -6,8 +6,7 @@
 [![Mykhailo Sichkaruk](https://img.shields.io/badge/GitHub-Mykhailo--Sichkaruk-blue.svg)](https://github.com/Mykhailo-Sichkaruk)
 
 
-This CLI is a companion tool for the [RAM Emulator library](https://github.com/AVO-cado-team/ramemu), allowing you to
-easily check, compile, and run RAM assembly code from the command line.
+This CLI is a companion tool for the [RAM Emulator library](https://github.com/AVO-cado-team/ramemu), allowing you to easily check, compile, and run RAM assembly code from the command line.
 
 ## Features
 
@@ -16,14 +15,18 @@ easily check, compile, and run RAM assembly code from the command line.
 - Customizable input and output options
 
 ## Installation
+
 ### From Source
+
 ```bash
 git clone https://github.com/Ddystopia/ram-cli.git
 cd ram-cli
 cargo install --path .
 ```
+
 ### For your Operating System
 Install binary for your operating system from [releases](https://github.com/AVO-cado-team/ram-cli/releases/tag/v0.1.1).
+
 
 ## Usage
 
@@ -47,6 +50,17 @@ ram-cli run [OPTIONS] <FILE>
 
 Compiles and runs the RAM assembly code in the specified file. You can also
 specify input and output options with `-i`/`--input` and `-o`/`--output` flags.
+
+### Generate shell completion  
+
+With `gen-completion` command, you can generate shell completion script for one of the following shells: `bash`, `zsh`, `fish`, `elvish` and `powershell`.
+
+```bash
+ram-cli gen-completion <SHELL>
+```
+
+After you generate the completion script, you should add it to your shell configuration file.
+On windows powershell, you should run the generated **.ps1** file and reload the shell to enable shell completion.
 
 ### Examples
 
