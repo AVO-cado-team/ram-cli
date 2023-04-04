@@ -6,7 +6,7 @@
 [![Mykhailo Sichkaruk](https://img.shields.io/badge/GitHub-Mykhailo--Sichkaruk-blue.svg)](https://github.com/Mykhailo-Sichkaruk)
 
 
-This CLI is a companion tool for the RAM Emulator library, allowing you to
+This CLI is a companion tool for the [RAM Emulator library](https://github.com/AVO-cado-team/ramemu), allowing you to
 easily check, compile, and run RAM assembly code from the command line.
 
 ## Features
