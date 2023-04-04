@@ -14,13 +14,11 @@ fn main() {
                 Err(e) => 
                     return println!("{}", e)
             };
-            
-            match create_source(&source, file) {
-                Ok(_) => 
-                    println!("{}: No errors found {}", "Syntax analysis".cyan().bold(), "✓".green().bold()),
-                Err(e) => 
-                    println!("{}", e)
-            }
+
+            let Err(e) = create_source(&source, file) else {
+                return println!("{}: No errors found {}", "Syntax analysis".cyan().bold(), "✓".green().bold())
+            };
+            println!("{}", e);
         }
 
         Subcommands::Run { file, input, output } => {
@@ -36,11 +34,10 @@ fn main() {
                     return println!("{}", e)
             };
 
-            match run_source(&source, statements, input, output) {
-                Ok(_) =>
-                    println!("{}: Program finished with no errors {}", "Runtime".cyan().bold(), "✓".green().bold()),
-                Err(e) => println!("{}", e)
-            }
+            let Err(e) = run_source(&source, statements, input, output) else {
+                return println!("{}: Program finished with no errors {}", "Runtime".cyan().bold(), "✓".green().bold())
+            };
+            println!("{}", e);
         }
     }
 }

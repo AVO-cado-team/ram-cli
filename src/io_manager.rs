@@ -9,15 +9,14 @@ use std::fs::{
     File
 };
 use std::io::{
-    BufRead,
-    Result as IoResult
-}; 
-use std::io::{
     stdin, 
-    stdout, 
+    stdout,
+    Read,
     Write,
     BufReader, 
-    BufWriter
+    BufWriter,
+    BufRead,
+    Result as IoResult
 };
 
 use crate::errors::RamCliError;
@@ -25,7 +24,7 @@ use crate::errors::RamCliError;
 struct RamCliStdin;
 struct RamCliStdout;
 
-impl std::io::Read for RamCliStdin {
+impl Read for RamCliStdin {
     fn read(&mut self, buf: &mut [u8]) -> IoResult<usize> {
         print!("{}", ">>> ".cyan().bold());
         stdout().flush().unwrap();
@@ -33,7 +32,7 @@ impl std::io::Read for RamCliStdin {
     }
 }
 
-impl std::io::Write for RamCliStdout {
+impl Write for RamCliStdout {
     fn write(&mut self, buf: &[u8]) -> IoResult<usize> {
         if buf == b"\n" || buf == b"\r" {
             println!();
@@ -58,9 +57,8 @@ fn ramcli_stdout() -> RamCliStdout {
 
 pub fn read_source(file: PathBuf) -> Result<String, RamCliError> {
     let path = Path::new(&file);
-    let full_path = canonicalize(path).map_err(|_|
-        RamCliError::Io(format!("File not found: {:?}", path))
-    )?;
+    let full_path = canonicalize(path)
+        .map_err(|_| RamCliError::Io(format!("File not found: {:?}", path)))?;
     
     if !full_path.is_file() {
         return Err(
@@ -68,18 +66,16 @@ pub fn read_source(file: PathBuf) -> Result<String, RamCliError> {
         );
     }
 
-    let source = read_to_string(full_path.clone()).map_err(|_|
-        RamCliError::Io(format!("Could not read file: {:?}", full_path))
-    )?;
+    let source = read_to_string(full_path.clone())
+        .map_err(|_| RamCliError::Io(format!("Could not read file: {:?}", full_path)))?;
 
     Ok(source)
 }
 
 pub fn create_input_buf(input: Option<PathBuf>) -> Result<Box<dyn BufRead>, RamCliError> {
     if let Some(input) = input {
-        let input_file = File::open(input).map_err(|_| 
-            RamCliError::Io("Could not open input file".to_string())
-        )?;
+        let input_file = File::open(input)
+            .map_err(|_| RamCliError::Io("Could not open input file".to_string()))?;
         Ok(Box::new(BufReader::new(input_file)))
     } else {
         Ok(Box::new(BufReader::new(ramcli_stdin())))
