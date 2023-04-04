@@ -27,4 +27,7 @@ pub enum Subcommands {
         #[arg(value_parser = clap::value_parser!(PathBuf))]
         output: Option<PathBuf>,
     },
+    GenCompletion {
+        shell: Shell,
+    },
 }
