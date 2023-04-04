@@ -1,39 +1,45 @@
-mod cli;
-mod errors;
-mod check;
-mod display_error;
-mod run;
-
 use clap::Parser;
-use cli::Cli;
-// use errors::RamCliError;
-
+use colored::Colorize;
+use ram_cli::run::run_source;
+use ram_cli::check::create_source;
+use ram_cli::io_manager::read_source;
+use ram_cli::cli::{Subcommands, Cli};
 
 fn main() {
     let args = Cli::parse();
     match args.subcommand {
-        cli::Subcommands::Check { file } => {
-            let check_result = check::check(file);
-            match check_result {
-                Ok(_) => {
-                }
-                Err(e) => {
-                    println!("{}", e.message);
-                }
+        Subcommands::Check { file } => {
+            let source = match read_source(file.clone()) {
+                Ok(s) => s,
+                Err(e) => 
+                    return println!("{}", e)
+            };
+            
+            match create_source(&source, file) {
+                Ok(_) => 
+                    println!("{}: No errors found {}", "Syntax analysis".cyan().bold(), "✓".green().bold()),
+                Err(e) => 
+                    println!("{}", e)
             }
         }
-        cli::Subcommands::Run { file, input, output } => {
-            let check_result = check::check(file.clone());
-            match check_result {
+        Subcommands::Run { file, input, output } => {
+            let source = match read_source(file.clone()) {
+                Ok(s) => s,
+                Err(e) => 
+                    return println!("{}", e)
+            };
+            
+            match create_source(&source, file) {
                 Ok(_) => {}
-                Err(e) => {
-                    println!("{}", e.message);
-                    return;
-                }
+                Err(e) =>
+                    return println!("{}", e)
             }
-            
-            run::run(file, input, output);
-            
+
+            match run_source(&source, input, output) {
+                Ok(_) =>
+                    println!("{}: Program finished with no errors {}", "Runtime".cyan().bold(), "✓".green().bold()),
+                Err(e) => println!("{}", e)
+            }
         }
     }
 }
