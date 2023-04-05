@@ -14,7 +14,11 @@ fn main() {
         Subcommands::Check { file } => {
             let source = match read_source(file.clone()) {
                 Ok(s) => s,
-                Err(e) => return println!("{}", e),
+                Err(e) => {
+                    styled_output(format!("{}", e).as_str(), vec![]);
+                    styled_output(" ✗\n", vec![STL::Red, STL::Bold]);
+                    return;
+                }
             };
 
             let Err(e) = create_program(&source, file) else {
@@ -34,7 +38,11 @@ fn main() {
         } => {
             let source = match read_source(file.clone()) {
                 Ok(s) => s,
-                Err(e) => return println!("{}", e),
+                Err(e) => {
+                    styled_output(format!("{}", e).as_str(), vec![]);
+                    styled_output(" ✗\n", vec![STL::Red, STL::Bold]);
+                    return;
+                }
             };
 
             let program = match create_program(&source, file) {
@@ -52,7 +60,7 @@ fn main() {
                 styled_output("✓\n", vec![STL::Green, STL::Bold]);
                 return;
             };
-            println!("{}", e);
+            styled_output(format!("{}\n", e).as_str(), vec![]);
         }
 
         Subcommands::GenCompletion { shell } => {
@@ -64,10 +72,14 @@ fn main() {
                 Shell::PowerShell => "./_ram-cli.ps1",
                 Shell::Zsh => "./_ram-cli",
                 _ => {
-                    return println!("Unknown shell type");
+                    styled_output("Unsupported shell\n", vec![]);
+                    return;
                 }
             };
-            println!("Completion file is generated: {path}");
+            styled_output(
+                format!("Completion file is generated: {}\n", path).as_str(),
+                vec![],
+            );
         }
     }
 }
