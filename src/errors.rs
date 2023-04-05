@@ -1,4 +1,5 @@
-use crate::colorize::Colorizable;
+use crate::colorize::styled_output;
+use crate::colorize::STL;
 use ramemu::errors::InterpretError;
 use std::error::Error;
 
@@ -15,14 +16,16 @@ pub enum RamCliError {
 }
 
 impl std::fmt::Display for RamCliError {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+    fn fmt(&self, _f: &mut std::fmt::Formatter) -> std::fmt::Result {
         let (kind, message) = match &self {
             RamCliError::Io(message) => ("IO error", message),
             RamCliError::Parse(message) => ("Parse error", message),
             RamCliError::Runtime(message) => ("Runtime error", message),
             RamCliError::Other(message) => ("Unknown error", message),
         };
-        write!(f, "{}: {}", kind.fgred().stbold(), message)
+        styled_output(kind, vec![STL::Red, STL::Bold]);
+        styled_output(format!(": {}", message).as_str(), vec![]);
+        Ok(())
     }
 }
 

@@ -1,7 +1,8 @@
 use clap::{CommandFactory, Parser};
 use clap_complete::Shell;
 use ram_cli::cli::{Cli, Subcommands};
-use ram_cli::colorize::Colorizable;
+use ram_cli::colorize::styled_output;
+use ram_cli::colorize::STL;
 use ram_cli::create_program::create_program;
 use ram_cli::io_manager::read_source;
 use ram_cli::run::run_source;
@@ -17,9 +18,13 @@ fn main() {
             };
 
             let Err(e) = create_program(&source, file) else {
-                return println!("{}: No errors found {}", "Syntax analysis".fgcyan().stbold(), "✓".fggreen().stbold())
+                styled_output("Syntax analysis: ", vec![STL::Green, STL::Bold]);
+                styled_output("No errors found ", vec![STL::Normal, STL::Bold]);
+                styled_output("✓\n", vec![STL::Green, STL::Bold]);
+                return;
             };
-            println!("{}", e);
+            styled_output(format!("{}", e).as_str(), vec![]);
+            styled_output(" ✗\n", vec![STL::Red, STL::Bold]);
         }
 
         Subcommands::Run {
@@ -34,11 +39,18 @@ fn main() {
 
             let program = match create_program(&source, file) {
                 Ok(program) => program,
-                Err(e) => return println!("{}", e),
+                Err(e) => {
+                    styled_output(format!("{}", e).as_str(), vec![]);
+                    styled_output(" ✗\n", vec![STL::Red, STL::Bold]);
+                    return;
+                }
             };
 
             let Err(e) = run_source(&source, program, input, output) else {
-                return println!("{}: Program finished with no errors {}", "Runtime".fgcyan().stbold(), "✓".fggreen().stbold())
+                styled_output("Runtime: ", vec![STL::Cyan, STL::Bold]);
+                styled_output("Program finished with no errors ", vec![STL::Green, STL::Bold]);
+                styled_output("✓\n", vec![STL::Green, STL::Bold]);
+                return;
             };
             println!("{}", e);
         }

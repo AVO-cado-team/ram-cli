@@ -1,4 +1,5 @@
-use crate::colorize::Colorizable;
+use crate::colorize::styled_output;
+use crate::colorize::STL;
 use std::fs::{canonicalize, read_to_string, File};
 use std::io::{stdin, stdout, BufRead, BufReader, BufWriter, Read, Result as IoResult, Write};
 use std::path::PathBuf;
@@ -10,7 +11,7 @@ struct RamCliStdout;
 
 impl Read for RamCliStdin {
     fn read(&mut self, buf: &mut [u8]) -> IoResult<usize> {
-        print!("{}", ">>> ".fgcyan().stbold());
+        styled_output(">>> ", vec![STL::Cyan, STL::Bold]);
         stdout().flush().unwrap();
         stdin().read(buf)
     }
@@ -19,14 +20,12 @@ impl Read for RamCliStdin {
 impl Write for RamCliStdout {
     fn write(&mut self, buf: &[u8]) -> IoResult<usize> {
         if buf == b"\n" || buf == b"\r" {
-            println!();
+            styled_output("\n", vec![STL::Normal]);
             return Ok(buf.len());
         }
-        print!(
-            "{} {}",
-            "<<<".fgcyan().stbold(),
-            String::from_utf8_lossy(buf)
-        );
+        styled_output("<<< ", vec![STL::Cyan, STL::Bold]);
+        styled_output(&String::from_utf8_lossy(buf), vec![STL::Normal]);
+
         Ok(buf.len())
     }
 

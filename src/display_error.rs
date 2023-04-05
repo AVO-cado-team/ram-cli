@@ -1,16 +1,11 @@
-use crate::colorize::Colorizable;
+use crate::colorize::styled_output;
+use crate::colorize::STL;
 use crate::errors::RamCliError;
+use crate::highlighter::code_highlighter;
+use crate::highlighter::PotentialProblem;
 use ramemu::errors::InterpretError;
 use ramemu::errors::InvalidArgument;
 use ramemu::errors::ParseError;
-
-/// Invalid Instruction Part
-enum IIP {
-    Opcode,
-    Argument,
-    Full,
-    Nothing,
-}
 
 fn get_line_from_source(source: &str, line_index: usize) -> Result<&str, RamCliError> {
     source
@@ -23,69 +18,56 @@ fn display_error_message(
     source: &str,
     line_index: usize,
     message: &str,
-    iip: IIP,
+    pp: PotentialProblem,
 ) -> Result<(), RamCliError> {
-    let line = get_line_from_source(source, line_index)?;
-    let (command, comment) = line.split_once('#').unwrap_or((line, ""));
-    let (mut opcode, mut argument) = command.split_once(' ').unwrap_or((command, ""));
-    opcode = opcode.trim();
-    argument = argument.trim();
+    styled_output("Error: ", vec![STL::Red, STL::Bold]);
+    styled_output(message, vec![]);
+    styled_output("\n", vec![]);
 
-    let command = match iip {
-        IIP::Opcode => format!("{} {} ", format!(" {} ", opcode).bgred(), argument),
-        IIP::Argument => format!("{} {} ", opcode, format!(" {} ", argument).bgred()),
-        IIP::Full => format!(
-            "{} {} ",
-            format!(" {} ", opcode).bgred(),
-            format!(" {} ", argument).bgred()
-        ),
-        IIP::Nothing => command.to_string(),
-    };
+    if line_index != 0 {
+        code_highlighter(
+            line_index - 1,
+            get_line_from_source(source, line_index - 1)?,
+            PotentialProblem::DistplayOnly,
+        );
+    }
+    code_highlighter(line_index, get_line_from_source(source, line_index)?, pp);
 
-    let comment = if !comment.is_empty() {
-        format!("#{}", comment).as_str().fggray()
-    } else {
-        "".to_string()
-    };
-
-    println!("{}: {}", "Error".fgred().stbold(), message.trim());
-    println!(
-        "{}\t{} {}{}\n",
-        line_index.to_string().fgbright_blue().stbold(),
-        '|'.to_string().fgbright_blue().stbold(),
-        command,
-        comment
-    );
+    if line_index != source.lines().count() {
+        code_highlighter(
+            line_index + 1,
+            get_line_from_source(source, line_index + 1)?,
+            PotentialProblem::DistplayOnly,
+        );
+    }
+    styled_output("\n", vec![]);
     Ok(())
 }
 
 pub fn display_parsing_error(source: &str, error: &ParseError) -> Result<(), RamCliError> {
-    let (line_index, message, iip) = match error {
+    let (line_index, message, pp) = match error {
         ParseError::LabelIsNotValid(line_index) => (
             *line_index,
             format!(
                 "Label is not valid. Use only labels from {}:",
-                "(a-zA-Z_)[a-zA-Z0-9_]*".fgbright_blue().stbold()
+                "(a-zA-Z_)[a-zA-Z0-9_]*"
             ),
-            IIP::Full,
+            PotentialProblem::Head,
         ),
         ParseError::UnsupportedSyntax(line_index) => (
             *line_index,
             "Unsupported syntax. Maybe you passed on an extra argument".to_string(),
-            IIP::Argument,
+            PotentialProblem::Tail,
         ),
         ParseError::UnsupportedOpcode(line_index, opcode) => (
             *line_index,
-            format!(
-                "Unsupported opcode: {}",
-                opcode.to_string().fgbright_blue().stbold()
-            ),
-            IIP::Opcode,
+            format!("Unsupported opcode: {}", opcode),
+            PotentialProblem::Head,
         ),
         ParseError::ArgumentIsRequired(line_index) => (
             *line_index,
             "Argument is required".to_string(),
-            IIP::Argument,
+            PotentialProblem::Tail,
         ),
         ParseError::ArgumentIsNotValid(line_index, argument) => (
             *line_index,
@@ -101,14 +83,16 @@ pub fn display_parsing_error(source: &str, error: &ParseError) -> Result<(), Ram
                     InvalidArgument::ArgumentIsNotValid => "Argument is not valid",
                 },
             ),
-            IIP::Argument,
+            PotentialProblem::Tail,
         ),
-        ParseError::UnknownError(line_index) => {
-            (*line_index, "Unknown error".to_string(), IIP::Opcode)
-        }
+        ParseError::UnknownError(line_index) => (
+            *line_index,
+            "Unknown error".to_string(),
+            PotentialProblem::Head,
+        ),
     };
 
-    display_error_message(source, line_index, &message, iip)?;
+    display_error_message(source, line_index, &message, pp)?;
     Ok(())
 }
 
@@ -117,38 +101,38 @@ pub fn display_runtime_error(source: &str, error: &InterpretError) -> Result<(),
         InterpretError::SegmentationFault(line_index) => (
             *line_index,
             "Segmentation fault. Look for possible reasons in the documentation".to_string(),
-            IIP::Nothing,
+            PotentialProblem::Unkn,
         ),
         InterpretError::UnknownLabel(line_index) => (
             *line_index,
             "Unknown label. Attempted to jump to unknown label".to_string(),
-            IIP::Argument,
+            PotentialProblem::Tail,
         ),
         InterpretError::InvalidInput(line_index, input) => (
             *line_index,
             format!("Invalid input: {}", input),
-            IIP::Nothing,
+            PotentialProblem::Unkn,
         ),
         InterpretError::InvalidLiteral(line_index) => (
             *line_index,
             "Invalid literal. Attempted to use invalid literal value".to_string(),
-            IIP::Nothing,
+            PotentialProblem::Unkn,
         ),
         InterpretError::DivisionByZero(line_index) => (
             *line_index,
             "Division by zero. Are you trying to divide by zero?".to_string(),
-            IIP::Nothing,
+            PotentialProblem::Unkn,
         ),
         InterpretError::IOError(line_index) => (
             *line_index,
             "Invalid input/output. Check if you have provided valid input/output files".to_string(),
-            IIP::Nothing,
+            PotentialProblem::Unkn,
         ),
         InterpretError::Halted(line_index) => (
             *line_index,
             "Halted! You have reached the end of the program. Don't try to continue execution!"
                 .to_string(),
-            IIP::Nothing,
+            PotentialProblem::Unkn,
         ),
     };
     display_error_message(source, line_index, &message, iip)?;
