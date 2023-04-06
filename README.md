@@ -2,8 +2,8 @@
 
 ![Version 0.1.1](https://img.shields.io/badge/version-0.1.1-blue.svg)
 [![License](https://img.shields.io/badge/license-GNU3-blue.svg)](./LICENSE)
-[![ic-it](https://img.shields.io/badge/GitHub-ic--it-blue.svg)](https://github.com/ic-it)
-[![Mykhailo Sichkaruk](https://img.shields.io/badge/GitHub-Mykhailo--Sichkaruk-blue.svg)](https://github.com/Mykhailo-Sichkaruk)
+[![ic-it](https://img.shields.io/badge/GitHub-ic--it-brightgreen.svg)](https://github.com/ic-it)
+[![Mykhailo Sichkaruk](https://img.shields.io/badge/GitHub-Mykhailo--Sichkaruk-brightgreen.svg)](https://github.com/Mykhailo-Sichkaruk)
 
 This CLI is a companion tool for the [RAM Emulator library](https://github.com/AVO-cado-team/ramemu), allowing you to easily check, compile, and run RAM assembly code from the command line.
 
