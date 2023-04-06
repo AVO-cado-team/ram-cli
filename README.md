@@ -5,8 +5,9 @@
 [![ic-it](https://img.shields.io/badge/GitHub-ic--it-blue.svg)](https://github.com/ic-it)
 [![Mykhailo Sichkaruk](https://img.shields.io/badge/GitHub-Mykhailo--Sichkaruk-blue.svg)](https://github.com/Mykhailo-Sichkaruk)
 
-
 This CLI is a companion tool for the [RAM Emulator library](https://github.com/AVO-cado-team/ramemu), allowing you to easily check, compile, and run RAM assembly code from the command line.
+
+[![asciicast](https://asciinema.org/a/575194.svg)](https://asciinema.org/a/575194)
 
 ## Features
 
@@ -29,8 +30,6 @@ Install binary for your operating system from [releases](https://github.com/AVO-
 
 
 ## Usage
-
-[![asciicast](https://asciinema.org/a/RTRODL0nZnaUeBMUDrLnJYi2W.svg)](https://asciinema.org/a/RTRODL0nZnaUeBMUDrLnJYi2W)
 
 To use the RAM Emulator CLI, you can run the following commands: Help
 
