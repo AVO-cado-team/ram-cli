@@ -30,6 +30,8 @@ Install binary for your operating system from [releases](https://github.com/AVO-
 
 ## Usage
 
+[![asciicast](https://asciinema.org/a/RTRODL0nZnaUeBMUDrLnJYi2W.svg)](https://asciinema.org/a/RTRODL0nZnaUeBMUDrLnJYi2W)
+
 To use the RAM Emulator CLI, you can run the following commands: Help
 
 ```bash
