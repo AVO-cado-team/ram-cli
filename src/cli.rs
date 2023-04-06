@@ -1,4 +1,5 @@
 use clap::{Parser, Subcommand, ValueHint};
+use clap_complete::Shell;
 use std::path::PathBuf;
 
 #[derive(Parser, Debug)]
@@ -26,16 +27,7 @@ pub enum Subcommands {
         #[arg(value_parser = clap::value_parser!(PathBuf))]
         output: Option<PathBuf>,
     },
-    // Compile {
-    //     #[clap(value_hint(ValueHint::DirPath))]
-    //     file: PathBuf,
-
-    //     #[arg(default_value_t = false)]
-    //     #[clap(long)]
-    //     turing_machine: bool,
-    // },
-    // Debug {
-    //     #[clap(value_hint(ValueHint::DirPath))]
-    //     file: PathBuf,
-    // },
+    GenCompletion {
+        shell: Shell,
+    },
 }
