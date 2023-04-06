@@ -1,6 +1,5 @@
 use crate::display_error::display_parsing_error;
 use crate::errors::RamCliError;
-use colored::Colorize;
 use ramemu::parser;
 use ramemu::program::Program;
 use ramemu::stmt::Stmt;
@@ -12,9 +11,10 @@ pub fn create_program(source: &str, file_path: PathBuf) -> Result<Program, RamCl
         .iter()
         .filter_map(|stmt| stmt.as_ref().err().cloned())
         .collect();
-    errors
-        .iter()
-        .try_for_each(|error| display_parsing_error(source, error))?;
+
+    for error in errors.iter() {
+        display_parsing_error(source, error)?;
+    }
 
     if errors.is_empty() {
         let stmts: Vec<Stmt> = stmts_result
@@ -26,12 +26,8 @@ pub fn create_program(source: &str, file_path: PathBuf) -> Result<Program, RamCl
 
     Err(RamCliError::Parse(format!(
         "Found {} {} in file: {}",
-        errors.len().to_string().bright_yellow().bold(),
+        errors.len(),
         if errors.len() == 1 { "error" } else { "errors" },
-        file_path
-            .to_str()
-            .expect("This should never happen")
-            .bright_yellow()
-            .bold()
+        file_path.to_str().expect("This should never happen").trim()
     )))
 }

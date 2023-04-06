@@ -2,11 +2,18 @@
 name = "ram-cli"
 version = "0.1.1"
 edition = "2021"
-authors = ["ic-it <illiayrch@gmail.com>", "Mykhailo Sichkaruk <mykhailo.sichkaruk@gmail.com>"]
+authors = [
+    "ic-it <illiayrch@gmail.com>",
+    "Mykhailo Sichkaruk <mykhailo.sichkaruk@gmail.com>",
+]
 description = "CLI for ramemu"
 
 [dependencies]
 clap = { version = "4.2.1", features = ["derive"] }
 clap_complete = "4"
+ramemu = { git = "https://github.com/AVO-cado-team/ramemu.git", tag = "0.1.4" }
 colored = "2.0.0"
-ramemu = { git = "https://github.com/AVO-cado-team/ramemu.git", tag = "0.1.4"}
+termcolor = "1.2.0"
+
+[features]
+html_output = []
