@@ -11,9 +11,10 @@ pub fn create_program(source: &str, file_path: PathBuf) -> Result<Program, RamCl
         .iter()
         .filter_map(|stmt| stmt.as_ref().err().cloned())
         .collect();
-    errors
-        .iter()
-        .try_for_each(|error| display_parsing_error(source, error))?;
+
+    for error in errors.iter() {
+        display_parsing_error(source, error)?;
+    }
 
     if errors.is_empty() {
         let stmts: Vec<Stmt> = stmts_result

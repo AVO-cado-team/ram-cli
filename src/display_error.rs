@@ -19,32 +19,43 @@ fn display_error_message(
     line_index: usize,
     message: &str,
     pp: PotentialProblem,
-) -> Result<(), RamCliError> {
-    styled_output("Error: ", vec![STL::Red, STL::Bold]);
-    styled_output(message, vec![]);
-    styled_output("\n", vec![]);
+) -> Result<String, RamCliError> {
+    let mut result = String::new();
+
+    result.push_str(&format!(
+        "{} {} {}",
+        styled_output("Error: ", [STL::Red, STL::Bold]),
+        styled_output(message, []),
+        styled_output("\n", [])
+    ));
 
     if line_index != 0 {
-        code_highlighter(
+        result.push_str(&code_highlighter(
             line_index - 1,
             get_line_from_source(source, line_index - 1)?,
             PotentialProblem::DistplayOnly,
-        );
+        ));
     }
-    code_highlighter(line_index, get_line_from_source(source, line_index)?, pp);
+    result.push_str(&code_highlighter(
+        line_index,
+        get_line_from_source(source, line_index)?,
+        pp,
+    ));
 
     if line_index != source.lines().count() {
-        code_highlighter(
+        result.push_str(&code_highlighter(
             line_index + 1,
             get_line_from_source(source, line_index + 1)?,
             PotentialProblem::DistplayOnly,
-        );
+        ));
     }
-    styled_output("\n", vec![]);
-    Ok(())
+    result.push_str(&styled_output("\n", []));
+    Ok(result)
 }
 
-pub fn display_parsing_error(source: &str, error: &ParseError) -> Result<(), RamCliError> {
+pub fn display_parsing_error(source: &str, error: &ParseError) -> Result<String, RamCliError> {
+    let mut result = String::new();
+
     let (line_index, message, pp) = match error {
         ParseError::LabelIsNotValid(line_index) => (
             *line_index,
@@ -92,11 +103,13 @@ pub fn display_parsing_error(source: &str, error: &ParseError) -> Result<(), Ram
         ),
     };
 
-    display_error_message(source, line_index, &message, pp)?;
-    Ok(())
+    result.push_str(&display_error_message(source, line_index, &message, pp)?);
+    Ok(result)
 }
 
-pub fn display_runtime_error(source: &str, error: &InterpretError) -> Result<(), RamCliError> {
+pub fn display_runtime_error(source: &str, error: &InterpretError) -> Result<String, RamCliError> {
+    let mut result = String::new();
+
     let (line_index, message, iip) = match error {
         InterpretError::SegmentationFault(line_index) => (
             *line_index,
@@ -135,6 +148,6 @@ pub fn display_runtime_error(source: &str, error: &InterpretError) -> Result<(),
             PotentialProblem::Unkn,
         ),
     };
-    display_error_message(source, line_index, &message, iip)?;
-    Ok(())
+    result.push_str(&display_error_message(source, line_index, &message, iip)?);
+    Ok(result)
 }

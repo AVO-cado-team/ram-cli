@@ -1,12 +1,13 @@
 load =0
 
 read  0
-store 1 # nmber
+store =1 # you can not store a number
 
 div =0
 
+invalid-label:
 
-Test 12
+test =123
 
 # IF 1 or 2 or 3
 sub =1

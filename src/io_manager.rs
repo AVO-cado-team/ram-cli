@@ -11,7 +11,7 @@ struct RamCliStdout;
 
 impl Read for RamCliStdin {
     fn read(&mut self, buf: &mut [u8]) -> IoResult<usize> {
-        styled_output(">>> ", vec![STL::Cyan, STL::Bold]);
+        styled_output(">>> ", [STL::Cyan, STL::Bold]);
         stdout().flush().unwrap();
         stdin().read(buf)
     }
@@ -20,11 +20,11 @@ impl Read for RamCliStdin {
 impl Write for RamCliStdout {
     fn write(&mut self, buf: &[u8]) -> IoResult<usize> {
         if buf == b"\n" || buf == b"\r" {
-            styled_output("\n", vec![STL::Normal]);
+            styled_output("\n", [STL::Normal]);
             return Ok(buf.len());
         }
-        styled_output("<<< ", vec![STL::Cyan, STL::Bold]);
-        styled_output(&String::from_utf8_lossy(buf), vec![STL::Normal]);
+        styled_output("<<< ", [STL::Cyan, STL::Bold]);
+        styled_output(&String::from_utf8_lossy(buf), [STL::Normal]);
 
         Ok(buf.len())
     }

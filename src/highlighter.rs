@@ -1,6 +1,7 @@
 use crate::colorize::styled_output;
 use crate::colorize::STL;
 
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum PotentialProblem {
     Head,
     Tail,
@@ -23,33 +24,39 @@ enum ParseState {
     Comment,
 }
 
-pub fn code_highlighter(line: usize, source: &str, pp: PotentialProblem) {
+pub fn code_highlighter(line: usize, source: &str, pp: PotentialProblem) -> String {
+    let mut result = String::new();
+
     let mut state = ParseState::BeforeHead;
-    let mut i = 0;
-    let source = source.replace('\t', "    ").replace('\r', "");
+    let binding = source.replace('\t', "    ").replace('\r', "");
+    let mut source = binding.as_str();
+
     match pp {
         PotentialProblem::Head | PotentialProblem::Tail | PotentialProblem::Unkn => {
-            styled_output(&line.to_string(), vec![STL::Red])
+            result += &styled_output(&line.to_string(), [STL::Red])
         }
-        PotentialProblem::DistplayOnly => styled_output(&line.to_string(), vec![STL::BrightCyan]),
+        PotentialProblem::DistplayOnly => {
+            result += &styled_output(&line.to_string(), [STL::BrightCyan])
+        }
     };
-    styled_output("\t", vec![STL::Normal]);
-    styled_output("| ", vec![STL::BrightCyan]);
+    result += &styled_output("\t", [STL::Normal]);
+    result += &styled_output("| ", [STL::BrightCyan]);
 
-    while i < source.len() {
-        let c = source.chars().nth(i).unwrap();
-        (state, i) = match state {
+    while !source.is_empty() {
+        let c = &source[0..1];
+
+        (state, source) = match state {
             ParseState::BeforeHead => match c {
-                ' ' => {
-                    styled_output(&c.to_string(), vec![STL::Normal]);
-                    (ParseState::BeforeHead, i + 1)
+                " " => {
+                    result += &styled_output(c, [STL::Normal]);
+                    (ParseState::BeforeHead, &source[1..])
                 }
-                '#' => (ParseState::Comment, i),
-                _ => (ParseState::Head, i),
+                "#" => (ParseState::Comment, source),
+                _ => (ParseState::Head, source),
             },
             ParseState::Head => match c {
-                ' ' => (ParseState::AfterHead, i),
-                '#' => (ParseState::Comment, i),
+                " " => (ParseState::AfterHead, source),
+                "#" => (ParseState::Comment, source),
                 _ => {
                     let is_label = if let Some(label_identificator_index) = source.find(':') {
                         let comment_index = if let Some(comment_index) = source.find('#') {
@@ -62,95 +69,94 @@ pub fn code_highlighter(line: usize, source: &str, pp: PotentialProblem) {
                         false
                     };
                     match pp {
-                        PotentialProblem::Head => {
-                            styled_output(&c.to_string(), vec![STL::OnBrightRed])
-                        }
+                        PotentialProblem::Head => result += &styled_output(c, [STL::OnBrightRed]),
                         _ => {
                             if is_label {
-                                styled_output(&c.to_string(), vec![STL::BrightYellow])
+                                result += &styled_output(c, [STL::BrightYellow])
                             } else {
-                                styled_output(&c.to_string(), vec![STL::Red])
+                                result += &styled_output(c, [STL::Red])
                             }
                         }
                     };
-                    (ParseState::Head, i + 1)
+                    (ParseState::Head, &source[1..])
                 }
             },
             ParseState::AfterHead => match c {
-                ' ' => {
-                    styled_output(&c.to_string(), vec![STL::Normal]);
-                    (ParseState::AfterHead, i + 1)
+                " " => {
+                    result += &styled_output(c, [STL::Normal]);
+                    (ParseState::AfterHead, &source[1..])
                 }
-                '#' => (ParseState::Comment, i),
-                _ => (ParseState::Tail, i),
+                "#" => (ParseState::Comment, source),
+                _ => (ParseState::Tail, source),
             },
             ParseState::Tail => match c {
-                ' ' => (ParseState::AfterTail, i),
-                '#' => (ParseState::Comment, i),
+                " " => (ParseState::AfterTail, source),
+                "#" => (ParseState::Comment, source),
                 _ => match pp {
                     PotentialProblem::Tail => {
-                        styled_output(&c.to_string(), vec![STL::OnRed]);
-                        (ParseState::Tail, i + 1)
+                        result += &styled_output(c, [STL::OnRed]);
+                        (ParseState::Tail, &source[1..])
                     }
                     _ => {
-                        if c.is_ascii_digit() {
-                            (ParseState::TailIndirect, i)
-                        } else if c == '=' {
-                            styled_output(&c.to_string(), vec![STL::BrightBlue]);
-                            (ParseState::TailPure, i + 1)
-                        } else if c == '*' {
-                            styled_output(&c.to_string(), vec![STL::BrightRed]);
-                            (ParseState::TailDirect, i + 1)
+                        if c.parse::<i8>().ok().is_some() {
+                            (ParseState::TailIndirect, source)
+                        } else if c == "=" {
+                            result += &styled_output(c, [STL::BrightBlue]);
+                            (ParseState::TailPure, &source[1..])
+                        } else if c == "*" {
+                            result += &styled_output(c, [STL::BrightRed]);
+                            (ParseState::TailDirect, &source[1..])
                         } else {
-                            (ParseState::TailLabel, i)
+                            (ParseState::TailLabel, source)
                         }
                     }
                 },
             },
             ParseState::TailLabel => match c {
-                ' ' => (ParseState::AfterTail, i),
-                '#' => (ParseState::Comment, i),
+                " " => (ParseState::AfterTail, source),
+                "#" => (ParseState::Comment, source),
                 _ => {
-                    styled_output(&c.to_string(), vec![STL::BrightYellow]);
-                    (ParseState::TailLabel, i + 1)
+                    result += &styled_output(c, [STL::BrightYellow]);
+                    (ParseState::TailLabel, &source[1..])
                 }
             },
             ParseState::TailDirect => match c {
-                ' ' => (ParseState::AfterTail, i),
-                '#' => (ParseState::Comment, i),
+                " " => (ParseState::AfterTail, source),
+                "#" => (ParseState::Comment, source),
                 _ => {
-                    styled_output(&c.to_string(), vec![STL::Normal]);
-                    (ParseState::TailDirect, i + 1)
+                    result += &styled_output(c, [STL::White]);
+                    (ParseState::TailDirect, &source[1..])
                 }
             },
             ParseState::TailIndirect => match c {
-                ' ' => (ParseState::AfterTail, i),
-                '#' => (ParseState::Comment, i),
+                " " => (ParseState::AfterTail, source),
+                "#" => (ParseState::Comment, source),
                 _ => {
-                    styled_output(&c.to_string(), vec![STL::Normal]);
-                    (ParseState::TailIndirect, i + 1)
+                    result += &styled_output(c, [STL::White]);
+                    (ParseState::TailIndirect, &source[1..])
                 }
             },
             ParseState::TailPure => match c {
-                ' ' => (ParseState::AfterTail, i),
-                '#' => (ParseState::Comment, i),
+                " " => (ParseState::AfterTail, source),
+                "#" => (ParseState::Comment, source),
                 _ => {
-                    styled_output(&c.to_string(), vec![STL::BrightBlue]);
-                    (ParseState::TailPure, i + 1)
+                    result += &styled_output(c, [STL::BrightBlue]);
+                    (ParseState::TailPure, &source[1..])
                 }
             },
             ParseState::AfterTail => match c {
-                '#' => (ParseState::Comment, i),
+                "#" => (ParseState::Comment, source),
                 _ => {
-                    styled_output(&c.to_string(), vec![STL::Normal]);
-                    (ParseState::AfterTail, i + 1)
+                    result += &styled_output(c, [STL::Normal]);
+                    (ParseState::AfterTail, &source[1..])
                 }
             },
             ParseState::Comment => {
-                styled_output(&c.to_string(), vec![STL::TrueColor(128, 128, 128)]);
-                (ParseState::Comment, i + 1)
+                result += &styled_output(c, [STL::TrueColor(128, 128, 128)]);
+                (ParseState::Comment, &source[1..])
             }
         };
     }
-    styled_output("\n", vec![STL::Normal]);
+    result += &styled_output("\n", [STL::Normal]);
+    result
 }

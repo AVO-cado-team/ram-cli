@@ -23,8 +23,8 @@ impl std::fmt::Display for RamCliError {
             RamCliError::Runtime(message) => ("Runtime error", message),
             RamCliError::Other(message) => ("Unknown error", message),
         };
-        styled_output(kind, vec![STL::Red, STL::Bold]);
-        styled_output(format!(": {}", message).as_str(), vec![]);
+        styled_output(kind, [STL::Red, STL::Bold]);
+        styled_output(format!(": {}", message).as_str(), []);
         Ok(())
     }
 }
